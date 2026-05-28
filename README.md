@@ -1,4 +1,4 @@
-# Agente Outlook 365 con Claude
+# Agente Outlook 365 con Claude (research)
 
 Agente autónomo que lee correos de Outlook 365, los analiza con Claude y toma acciones automáticamente (responder, reenviar) según las reglas definidas en `config/rules.json`.
 
