@@ -1,0 +1,86 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Purpose
+
+Agente autónomo que lee emails de Outlook 365 via Microsoft Graph API, los analiza con Claude, y ejecuta acciones automáticas (responder, reenviar) según reglas configurables en JSON. Es un proyecto de investigación (research).
+
+## Setup
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env_example .env   # completar con credenciales reales
+```
+
+Variables de entorno requeridas (ver `.env_example`):
+- `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID` — app registrada en Azure AD con permisos Mail.Read, Mail.Send, Mail.ReadWrite
+- `USER_EMAIL` — casilla de Outlook a monitorear
+- `ANTHROPIC_API_KEY` — clave de API de Anthropic
+
+## Run Commands
+
+```powershell
+python agent.py                                    # loop cada 10 minutos
+python agent.py --once                             # una sola ejecución (útil para pruebas)
+python agent.py --interval 5                       # loop cada 5 minutos
+python agent.py --config config/rules_noche.json   # reglas alternativas
+```
+
+Logs en `logs/agent.log`. Para seguir en tiempo real:
+```powershell
+Get-Content logs\agent.log -Wait
+```
+
+## Architecture
+
+El flujo principal es: **leer → analizar → actuar → marcar**.
+
+```
+agent.py          Orquestador del loop. Carga reglas, llama a mail_client,
+                  analyzer y actions en secuencia. Argumentos CLI con argparse.
+
+mail_client.py    Wrapper sobre Microsoft Graph API. Autentica via MSAL (OAuth2
+                  client_credentials). Filtra emails SIN la categoría
+                  "AgenteProcesado" para evitar reprocesamiento. Después de
+                  actuar, marca el email con esa categoría.
+
+analyzer.py       Integración con Claude. Recibe el texto del email + reglas,
+                  devuelve JSON con: accion, razon, respuesta_html, reenviar_a,
+                  comentario_reenvio, prioridad. Acciones posibles: responder |
+                  reenviar | responder_y_reenviar | ignorar.
+
+actions.py        Ejecuta la decisión de Claude delegando en mail_client.
+```
+
+**Diseño clave**: las reglas en `config/rules.json` se recargan en cada ciclo (hot-reload). Cada regla define condiciones en lenguaje natural que Claude interpreta — no hay parsing de reglas en código. Si Claude falla en un email individual, el error se loguea y el agente continúa con el siguiente.
+
+## Rules Configuration
+
+`config/rules.json` define un array de reglas con campos:
+- `id`, `descripcion` — identificación
+- `condiciones` — texto en lenguaje natural que Claude usa para decidir si aplica
+- `accion` — `responder` | `reenviar` | `responder_y_reenviar` | `ignorar`
+- `reenviar_a` — lista de emails destino (para acciones con reenvío)
+- `instruccion_respuesta` — instrucción para Claude al redactar la respuesta HTML
+
+Se pueden crear archivos alternativos (e.g. `rules_noche.json`) y pasarlos con `--config`.
+
+## Model in Use
+
+`analyzer.py` usa `claude-sonnet-4-6`. Si se cambia de modelo, actualizar la constante en ese archivo.
+
+## Git Commits
+- Usar el estándar Conventional Commits para todos los mensajes de commit.
+  - Formato: `<tipo>[scope opcional]: <descripción>`.
+  - Tipos permitidos: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`.
+  - La descripción en minúsculas y en español.
+  - Si el cambio rompe compatibilidad, agregar `!` antes de `:` o footer `BREAKING CHANGE:`.
+  - Usar verbo en tercera persona del singular (presente indicativo) en la descripción, no infinitivo.
+    La descripción debe completar la frase "Si se aplica, este commit..."
+    ✓ "feat: agrega validación de email"
+    ✗ "feat: agregar validación de email"
+- Siempre mostrar el mensaje del commit propuesto y esperar confirmación antes de ejecutarlo.
+- NUNCA agregar trailers al commit (ni "Co-Authored-By", ni "Generated-by", ni ningún footer automático).
