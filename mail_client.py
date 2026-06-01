@@ -52,7 +52,7 @@ class MailClient:
         """
         params = {
             "$top": cantidad,
-            "$select": "id,subject,from,toRecipients,body,bodyPreview,receivedDateTime,isRead",
+            "$select": "id,subject,from,toRecipients,body,bodyPreview,receivedDateTime,isRead,conversationId,sentDateTime,hasAttachments,importance,internetMessageId,ccRecipients,replyTo,parentFolderId",
             "$orderby": "receivedDateTime asc",
             # Excluye los ya procesados por el agente
             "$filter": f"NOT categories/any(c:c eq '{CATEGORIA_PROCESADO}')",

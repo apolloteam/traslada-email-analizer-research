@@ -50,6 +50,11 @@ def ciclo(mail: MailClient, analizador: AnalizadorClaude, config: dict):
         try:
             log.info(f"  📧 Procesando: '{correo['subject']}' de {correo['from']['emailAddress']['address']}")
 
+            # Agrega y resuelve el campo custom 'direction' (recibido vs enviado).
+            remitente = correo.get("from", {}).get("emailAddress", {}).get("address", "")
+            direction = 1 if remitente.lower() == mail.user_email.lower() else 0  # 0=recibido, 1=enviado
+            correo["direction"] = direction
+
             # 1. Claude analiza el correo y decide qué hacer
             decision = analizador.analizar(correo, config["reglas"])
 
