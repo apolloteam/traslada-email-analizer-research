@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Get-Item *)"
+      "PowerShell(Get-Item *)",
+      "Bash(Get-ChildItem -Path \"n:\\\\Src\\\\Product\\\\traslada-email-analizer-research\" -Force)",
+      "Bash(Select-Object Name, FullName)"
     ]
   }
 }
