@@ -60,7 +60,9 @@ class MailClient:
         url = f"{GRAPH}/users/{self.user_email}/messages"
         r = requests.get(url, headers=self._headers(), params=params)
         r.raise_for_status()
-        return r.json().get("value", [])
+        resp = r.json().get("value", [])
+        
+        return resp
 
     def leer_completo(self, message_id: str) -> dict:
         """Obtiene el cuerpo completo de un correo."""
