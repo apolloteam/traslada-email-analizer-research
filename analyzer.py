@@ -3,18 +3,61 @@ analyzer.py — Analiza correos con Claude y decide qué acción tomar.
 """
 
 import os
+import re
 import json
+import unicodedata
 import anthropic
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 load_dotenv()
 
 MODELO = "claude-sonnet-4-6" #"claude-sonnet-4-20250514"
 
+# Caracteres Unicode invisibles usados por plataformas de email marketing para
+# evadir filtros de spam. Se normalizan antes de enviar el texto al LLM.
+_CHARS_A_ESPACIO = frozenset([
+    "\xa0",    # NO-BREAK SPACE
+    " ",  # FIGURE SPACE
+])
+_CHARS_ELIMINAR = frozenset([
+    "͏",  # COMBINING GRAPHEME JOINER
+    "­",  # SOFT HYPHEN
+    "​",  # ZERO WIDTH SPACE
+    "‌",  # ZERO WIDTH NON-JOINER
+    "‍",  # ZERO WIDTH JOINER
+    "‎",  # LEFT-TO-RIGHT MARK
+    "‏",  # RIGHT-TO-LEFT MARK
+    "⁠",  # WORD JOINER
+])
+
 
 class AnalizadorClaude:
     def __init__(self):
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+    def _extraer_texto_body(self, correo: dict) -> str:
+        """Extrae texto plano del body HTML del correo."""
+        html = correo.get("body", {}).get("content", "")
+        if not html:
+            return correo.get("bodyPreview", "")
+
+        soup = BeautifulSoup(html, "html.parser")
+        for tag in soup(["style", "script", "head", "meta", "link"]):
+            tag.decompose()
+
+        texto = soup.get_text(separator=" ")
+        texto = "".join(
+            " " if c in _CHARS_A_ESPACIO else
+            "" if unicodedata.category(c) == "Cf" or c in _CHARS_ELIMINAR else
+            c
+            for c in texto
+        )
+        # Limpia whitespace preservando saltos de línea para que el LLM entienda la estructura.
+        texto = re.sub(r"[ \t]+", " ", texto)
+        texto = re.sub(r"\n{3,}", "\n\n", texto)
+        texto = texto.strip()[:4000]
+        return texto
 
     def analizar(self, correo: dict, reglas: list[dict]) -> dict:
         """
@@ -22,19 +65,10 @@ class AnalizadorClaude:
         Devuelve un dict con: accion, razon, datos_extra
         """
 
-        # Extraer texto limpio del correo
-        remitente   = correo["from"]["emailAddress"]["address"]
-        asunto      = correo.get("subject", "(sin asunto)")
-        cuerpo      = correo.get("bodyPreview", "")  # primeros 255 chars
-        fecha       = correo.get("receivedDateTime", "")
-
-        # Si el bodyPreview es muy corto, usamos el body completo (HTML → texto)
-        if len(cuerpo) < 100 and correo.get("body"):
-            cuerpo = correo["body"].get("content", cuerpo)
-            # Quitar tags HTML básicos
-            import re
-            cuerpo = re.sub(r"<[^>]+>", " ", cuerpo)
-            cuerpo = re.sub(r"\s+", " ", cuerpo).strip()[:2000]
+        remitente = correo["from"]["emailAddress"]["address"]
+        asunto    = correo.get("subject", "(sin asunto)")
+        cuerpo    = self._extraer_texto_body(correo)
+        fecha     = correo.get("receivedDateTime", "")
 
         reglas_texto = json.dumps(reglas, ensure_ascii=False, indent=2)
 
