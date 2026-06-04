@@ -3,15 +3,18 @@ agent.py — Agente principal de Outlook 365
 Corre en loop, revisa correos nuevos, los analiza con Claude y ejecuta acciones.
 
 Uso:
-    python agent.py              # usa config/rules.json por defecto
-    python agent.py --interval 5 # revisa cada 5 minutos
+    python src/agent.py              # usa src/config/rules.json por defecto
+    python src/agent.py --interval 5 # revisa cada 5 minutos
 """
 
+import os
 import time
 import json
 import logging
-import argparse 
+import argparse
 from datetime import datetime, timezone
+
+_DIR = os.path.dirname(os.path.abspath(__file__))
 
 from mail_client import MailClient 
 from analyzer import AnalizadorClaude
@@ -22,14 +25,14 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler("logs/agent.log", encoding="utf-8"),
+        logging.FileHandler(os.path.join(_DIR, "logs", "agent.log"), encoding="utf-8"),
         logging.StreamHandler()
     ]
 )
 log = logging.getLogger(__name__)
 
 
-def cargar_config(path: str = "config/rules.json") -> dict:
+def cargar_config(path: str = os.path.join(_DIR, "config", "rules.json")) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
@@ -74,7 +77,7 @@ def ciclo(mail: MailClient, analizador: AnalizadorClaude, config: dict):
 def main():
     parser = argparse.ArgumentParser(description="Agente Outlook 365")
     parser.add_argument("--interval", type=int, default=None, help="Intervalo en minutos")
-    parser.add_argument("--config", default="config/rules.json", help="Ruta al archivo de reglas")
+    parser.add_argument("--config", default=os.path.join(_DIR, "config", "rules.json"), help="Ruta al archivo de reglas")
     parser.add_argument("--once", action="store_true", help="Correr solo una vez y salir")
     args = parser.parse_args()
 
