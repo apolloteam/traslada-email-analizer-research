@@ -9,21 +9,11 @@ import unicodedata
 import anthropic
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from pydantic import BaseModel
-from typing import Optional
-
 load_dotenv()
 
+from models.email_decision import EmailDecision
+
 MODELO = "claude-sonnet-4-6"
-
-
-class DecisionEmail(BaseModel):
-    accion: str
-    razon: str
-    respuesta_html: Optional[str] = None
-    reenviar_a: list[str] = []
-    comentario_reenvio: Optional[str] = None
-    prioridad: str
 
 
 # Caracteres Unicode invisibles usados por plataformas de email marketing para
@@ -116,7 +106,7 @@ Si ninguna regla aplica, usá "ignorar". La respuesta_html debe ser profesional 
             max_tokens=2048,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": prompt}],
-            output_format=DecisionEmail,
+            output_format=EmailDecision,
         )
 
         decision = response.parsed_output.model_dump()
