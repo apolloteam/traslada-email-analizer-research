@@ -73,19 +73,19 @@ def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
 def main():
     parser = argparse.ArgumentParser(description="Agente Outlook 365")
     parser.add_argument("--interval", type=int, default=None, help="Intervalo en minutos")
-    parser.add_argument("--config", default=None, help="Ruta al archivo de reglas (default: src/config/general_rules.md)")
+    parser.add_argument("--config", default=None, help="Carpeta de reglas (default: src/config/)")
     parser.add_argument("--once", action="store_true", help="Correr solo una vez y salir")
     args = parser.parse_args()
 
     intervalo  = args.interval or int(os.getenv("INTERVALO_MINUTOS", 10))
     buzones    = [b.strip() for b in os.getenv("BUZONES", "").split(";") if b.strip()]
-    analizador = AnalizadorClaude(rules_path=args.config) if args.config else AnalizadorClaude()
+    analizador = AnalizadorClaude(rules_dir=args.config) if args.config else AnalizadorClaude()
 
     log.info("=" * 55)
     log.info("  Agente Outlook 365 iniciado")
     log.info(f"  Buzones: {', '.join(buzones)}")
     log.info(f"  Intervalo: cada {intervalo} minutos")
-    log.info(f"  Reglas: {analizador.rules_path}")
+    log.info(f"  Reglas: {analizador.rules_dir}")
     log.info("=" * 55)
 
     if args.once:

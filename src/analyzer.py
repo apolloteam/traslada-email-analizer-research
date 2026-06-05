@@ -11,19 +11,30 @@ from models.email_decision import EmailDecision
 from utils.email_parser import extraer_texto_body
 
 MODELO = "claude-sonnet-4-6"
-_DEFAULT_RULES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", "general_rules.md")
+_DEFAULT_RULES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
 
 
 class AnalizadorClaude:
-    def __init__(self, rules_path: str = _DEFAULT_RULES):
+    def __init__(self, rules_dir: str = _DEFAULT_RULES_DIR):
         self.client = anthropic.Anthropic(
             api_key=os.getenv("ANTHROPIC_API_KEY"),
         )
 
-        self.rules_path = rules_path
+        self.rules_dir = rules_dir
 
-    def _cargar_reglas(self) -> str:
-        with open(self.rules_path, encoding="utf-8") as f:
+    def _cargar_reglas_generales(self) -> str:
+        path = os.path.join(self.rules_dir, "general_rules.md")
+        with open(path, encoding="utf-8") as f:
+            contenido = f.read()
+        return contenido
+
+    def _cargar_reglas_especificas(self, buzon: str) -> str:
+        """Carga reglas específicas del buzón desde {local}.md en el mismo directorio que rules_path. Retorna vacío si no existe."""
+        local = buzon.split("@")[0]  # "ventas", "soporte", etc.
+        path = os.path.join(self.rules_dir, f"{local}.md")
+        if not os.path.exists(path):
+            return "(sin reglas específicas para este correo)"
+        with open(path, encoding="utf-8") as f:
             contenido = f.read()
         return contenido
 
@@ -33,17 +44,21 @@ class AnalizadorClaude:
         Devuelve un dict con: accion, razon, datos_extra
         """
 
-        remitente = correo["from"]["emailAddress"]["address"]
-        asunto    = correo.get("subject", "(sin asunto)")
-        cuerpo    = extraer_texto_body(correo)
-        fecha     = correo.get("receivedDateTime", "")
-        reglas_generales    = self._cargar_reglas()
+        remitente          = correo["from"]["emailAddress"]["address"]
+        asunto             = correo.get("subject", "(sin asunto)")
+        cuerpo             = extraer_texto_body(correo)
+        fecha              = correo.get("receivedDateTime", "")
+        reglas_generales   = self._cargar_reglas_generales()
+        reglas_especificas = self._cargar_reglas_especificas(buzon)
 
         SYSTEM_PROMPT = f"""
 Sos un agente de correo empresarial. Analizá el correo recibido y decidí qué acción tomar según las reglas de la empresa.
 
 # Reglas de la empresa
 {reglas_generales}
+
+# Reglas específicas para este correo
+{reglas_especificas}
 
 # Campos de la respuesta
 - accion: "responder" | "reenviar" | "responder_y_reenviar" | "ignorar"
