@@ -30,8 +30,8 @@ class AnalizadorClaude:
 
     def _cargar_reglas_especificas(self, buzon: str) -> str:
         """Carga reglas específicas del buzón desde {local}.md en el mismo directorio que rules_path. Retorna vacío si no existe."""
-        local = buzon.split("@")[0]  # "ventas", "soporte", etc.
-        path = os.path.join(self.rules_dir, f"{local}.md")
+        name = buzon.split("@")[0]  # "ventas", "soporte", etc.
+        path = os.path.join(self.rules_dir, f"{name}_rules.md")
         if not os.path.exists(path):
             return "(sin reglas específicas para este correo)"
         with open(path, encoding="utf-8") as f:
@@ -52,12 +52,14 @@ class AnalizadorClaude:
         reglas_especificas = self._cargar_reglas_especificas(buzon)
 
         SYSTEM_PROMPT = f"""
-Sos un agente de correo empresarial. Analizá el correo recibido y decidí qué acción tomar según las reglas de la empresa.
+Sos un agente de correo empresarial. Analizá el correo recibido y decide qué acción tomar y completa los campos de la respuesta según las reglas generales de la empresa y las específicas para el correo.
 
 # Reglas de la empresa
+
 {reglas_generales}
 
 # Reglas específicas para este correo
+
 {reglas_especificas}
 
 # Campos de la respuesta
