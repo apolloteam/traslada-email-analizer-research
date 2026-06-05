@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-Agente autónomo que lee emails de Outlook 365 via Microsoft Graph API, los analiza con Claude, y ejecuta acciones automáticas (responder, reenviar) según reglas configurables en JSON. Es un proyecto de investigación (research).
+Agente autónomo que lee emails de Outlook 365 via Microsoft Graph API, los analiza con Claude, y ejecuta acciones automáticas (responder, reenviar) según reglas configurables en JSON.
 
 ## Setup
 

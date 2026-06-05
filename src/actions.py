@@ -8,7 +8,7 @@ from mail_client import MailClient
 log = logging.getLogger(__name__)
 
 
-def ejecutar_accion(decision: dict, correo: dict, mail: MailClient, config: dict) -> None:
+def ejecutar_accion(decision: dict, correo: dict, mail: MailClient) -> None:
     """
     Recibe la decisión de Claude y ejecuta la acción correspondiente.
 

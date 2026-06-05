@@ -3,7 +3,6 @@ analyzer.py — Analiza correos con Claude y decide qué acción tomar.
 """
 
 import os
-import json
 import anthropic
 from dotenv import load_dotenv
 load_dotenv()
@@ -12,15 +11,23 @@ from models.email_decision import EmailDecision
 from utils.email_parser import extraer_texto_body
 
 MODELO = "claude-sonnet-4-6"
+_DEFAULT_RULES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", "general_rules.md")
 
 
 class AnalizadorClaude:
-    def __init__(self):
+    def __init__(self, rules_path: str = _DEFAULT_RULES):
         self.client = anthropic.Anthropic(
             api_key=os.getenv("ANTHROPIC_API_KEY"),
         )
 
-    def analizar(self, correo: dict, reglas: list[dict]) -> dict:
+        self.rules_path = rules_path
+
+    def _cargar_reglas(self) -> str:
+        with open(self.rules_path, encoding="utf-8") as f:
+            contenido = f.read()
+        return contenido
+
+    def analizar(self, correo: dict) -> dict:
         """
         Le pasa el correo y las reglas a Claude.
         Devuelve un dict con: accion, razon, datos_extra
@@ -30,14 +37,13 @@ class AnalizadorClaude:
         asunto    = correo.get("subject", "(sin asunto)")
         cuerpo    = extraer_texto_body(correo)
         fecha     = correo.get("receivedDateTime", "")
-
-        reglas_texto = json.dumps(reglas, ensure_ascii=False, indent=2)
+        reglas_generales    = self._cargar_reglas()
 
         SYSTEM_PROMPT = f"""
 Sos un agente de correo empresarial. Analizá el correo recibido y decidí qué acción tomar según las reglas de la empresa.
 
 # Reglas de la empresa
-{reglas_texto}
+{reglas_generales}
 
 # Campos de la respuesta
 - accion: "responder" | "reenviar" | "responder_y_reenviar" | "ignorar"
