@@ -11,6 +11,14 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "agent.py --once",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/agent.py",
+            "args": ["--once"],
+            "console": "integratedTerminal"
         }
     ]
 }

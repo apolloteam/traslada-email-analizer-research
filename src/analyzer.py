@@ -27,7 +27,7 @@ class AnalizadorClaude:
             contenido = f.read()
         return contenido
 
-    def analizar(self, correo: dict) -> dict:
+    def analizar(self, correo: dict, buzon: str) -> dict:
         """
         Le pasa el correo y las reglas a Claude.
         Devuelve un dict con: accion, razon, datos_extra

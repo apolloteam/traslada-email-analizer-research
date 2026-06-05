@@ -14,12 +14,12 @@ CATEGORIA_PROCESADO = "AgenteProcesado"   # categoría que se crea en Outlook
 
 
 class MailClient:
-    def __init__(self):
-        self.client_id     = os.getenv("CLIENT_ID")
+    def __init__(self, buzon: str):
+        self.client_id = os.getenv("CLIENT_ID")
         self.client_secret = os.getenv("CLIENT_SECRET")
-        self.tenant_id     = os.getenv("TENANT_ID")
-        self.user_email    = os.getenv("USER_EMAIL")
-        self._token        = None
+        self.tenant_id = os.getenv("TENANT_ID")
+        self.buzon = buzon
+        self._token = None
 
     # ── Auth ──────────────────────────────────────────────────────
 
@@ -52,12 +52,14 @@ class MailClient:
         """
         params = {
             "$top": cantidad,
-            "$select": "id,subject,from,toRecipients,body,bodyPreview,receivedDateTime,isRead,conversationId,sentDateTime,hasAttachments,importance,internetMessageId,ccRecipients,replyTo,parentFolderId",
+            "$select": "id,subject,from,toRecipients,body,bodyPreview,receivedDateTime,"
+                        "isRead,conversationId,sentDateTime,hasAttachments,importance,"
+                        "internetMessageId,ccRecipients,replyTo,parentFolderId",
             "$orderby": "receivedDateTime asc",
             # Excluye los ya procesados por el agente
             "$filter": f"NOT categories/any(c:c eq '{CATEGORIA_PROCESADO}')",
         }
-        url = f"{GRAPH}/users/{self.user_email}/messages"
+        url = f"{GRAPH}/users/{self.buzon}/messages"
         r = requests.get(url, headers=self._headers(), params=params)
         r.raise_for_status()
         resp = r.json().get("value", [])
@@ -66,7 +68,7 @@ class MailClient:
 
     def leer_completo(self, message_id: str) -> dict:
         """Obtiene el cuerpo completo de un correo."""
-        url = f"{GRAPH}/users/{self.user_email}/messages/{message_id}"
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}"
         r = requests.get(url, headers=self._headers())
         r.raise_for_status()
         return r.json()
@@ -75,7 +77,7 @@ class MailClient:
 
     def responder(self, message_id: str, cuerpo_html: str) -> None:
         """Responde al correo original."""
-        url = f"{GRAPH}/users/{self.user_email}/messages/{message_id}/reply"
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}/reply"
         payload = {
             "message": {
                 "body": {"contentType": "HTML", "content": cuerpo_html}
@@ -88,7 +90,7 @@ class MailClient:
     def reenviar(self, message_id: str, destinatarios: list[str], comentario: str = "") -> None:
         """Reenvía el correo a una lista de destinatarios."""
         to_list = [{"emailAddress": {"address": e}} for e in destinatarios]
-        url = f"{GRAPH}/users/{self.user_email}/messages/{message_id}/forward"
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}/forward"
         payload = {
             "comment": comentario,
             "toRecipients": to_list,
@@ -98,7 +100,7 @@ class MailClient:
 
     def enviar_nuevo(self, destinatario: str, asunto: str, cuerpo_html: str) -> None:
         """Envía un correo nuevo (no como respuesta)."""
-        url = f"{GRAPH}/users/{self.user_email}/sendMail"
+        url = f"{GRAPH}/users/{self.buzon}/sendMail"
         payload = {
             "message": {
                 "subject": asunto,
@@ -115,12 +117,12 @@ class MailClient:
         Agrega la categoría 'AgenteProcesado' al correo.
         Así el agente no lo vuelve a procesar en el próximo ciclo.
         """
-        url = f"{GRAPH}/users/{self.user_email}/messages/{message_id}"
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}"
         payload = {"categories": [CATEGORIA_PROCESADO]}
         r = requests.patch(url, headers=self._headers(), json=payload)
         r.raise_for_status()
 
     def marcar_leido(self, message_id: str) -> None:
-        url = f"{GRAPH}/users/{self.user_email}/messages/{message_id}"
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}"
         r = requests.patch(url, headers=self._headers(), json={"isRead": True})
         r.raise_for_status()

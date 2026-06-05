@@ -31,12 +31,13 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 
-def ciclo(mail: MailClient, analizador: AnalizadorClaude):
-    """Un ciclo completo: leer → analizar → actuar."""
-    log.info("▶ Revisando correos nuevos...")
+def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
+    """Un ciclo completo para un buzón: leer → analizar → actuar."""
+    log.info(f"▶ Revisando correos de {mail_client.buzon}...")
 
+    # Lee correos no procesados (sin la categoría 'AgenteProcesado')
     max_correos = int(os.getenv("MAX_CORREOS_POR_CICLO", 20))
-    correos = mail.leer_no_procesados(cantidad=max_correos)
+    correos = mail_client.leer_no_procesados(cantidad=max_correos)
 
     if not correos:
         log.info("  Sin correos nuevos.")
@@ -50,20 +51,20 @@ def ciclo(mail: MailClient, analizador: AnalizadorClaude):
 
             # Agrega y resuelve el campo custom 'direction' (recibido vs enviado).
             remitente = correo.get("from", {}).get("emailAddress", {}).get("address", "")
-            direction = 1 if remitente.lower() == mail.user_email.lower() else 0  # 0=recibido, 1=enviado
+            direction = 1 if remitente.lower() == mail_client.buzon.lower() else 0  # 0=recibido, 1=enviado
             correo["direction"] = direction
 
             # 1. Claude analiza el correo y decide qué hacer
-            decision = analizador.analizar(correo)
+            decision = analizador.analizar(correo, mail_client.buzon)
 
             log.info(f"  🤖 Decisión: {decision['accion']} — {decision['razon']}")
 
             # 2. Ejecutar la acción decidida
             if decision["accion"] != "ignorar":
-                ejecutar_accion(decision, correo, mail)
+                ejecutar_accion(decision, correo, mail_client)
 
             # 3. Marcar como procesado (agregar categoría en Outlook)
-            mail.marcar_procesado(correo["id"])
+            mail_client.marcar_procesado(correo["id"])
 
         except Exception as e:
             log.error(f"  ❌ Error procesando correo {correo['id']}: {e}")
@@ -77,22 +78,26 @@ def main():
     args = parser.parse_args()
 
     intervalo  = args.interval or int(os.getenv("INTERVALO_MINUTOS", 10))
-    mail       = MailClient()
+    buzones    = [b.strip() for b in os.getenv("BUZONES", "").split(";") if b.strip()]
     analizador = AnalizadorClaude(rules_path=args.config) if args.config else AnalizadorClaude()
 
     log.info("=" * 55)
     log.info("  Agente Outlook 365 iniciado")
+    log.info(f"  Buzones: {', '.join(buzones)}")
     log.info(f"  Intervalo: cada {intervalo} minutos")
     log.info(f"  Reglas: {analizador.rules_path}")
     log.info("=" * 55)
 
     if args.once:
-        ciclo(mail, analizador)
+        for buzon in buzones:
+            ciclo(MailClient(buzon), analizador)
         return
 
     while True:
         try:
-            ciclo(mail, analizador)
+            for buzon in buzones:
+                ciclo(MailClient(buzon), analizador)
+
         except Exception as e:
             log.error(f"Error en ciclo principal: {e}")
 
