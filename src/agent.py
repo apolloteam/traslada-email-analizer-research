@@ -36,6 +36,7 @@ log = logging.getLogger(__name__)
 
 def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
     """Un ciclo completo para un buzón: leer → analizar → actuar."""
+    mail_client.refresh_token()
     log.info(f"▶ Revisando correos de {mail_client.buzon}...")
 
     # Lee correos no procesados (sin la categoría 'AgenteProcesado')

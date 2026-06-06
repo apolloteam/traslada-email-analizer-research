@@ -1,3 +1,3 @@
 ✓ / ☐
-☐ En analizar() cargar prompt específico para el buzon
 ☐ Ver chat de agregado de decisiones: https://claude.ai/chat/475eb81e-68ef-4d20-88bc-7ede85e2c499
+    ✓ En analizar() cargar prompt específico para el buzon.

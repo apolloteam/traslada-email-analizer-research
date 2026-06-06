@@ -33,13 +33,16 @@ class MailClient:
             scopes=["https://graph.microsoft.com/.default"]
         )
         if "access_token" not in result:
-            raise Exception(f"Auth fallida: {result.get('error_description')}")
+            raise Exception(f"Auth office 365 fallida: {result.get('error_description')}")
         return result["access_token"]
 
+    def refresh_token(self) -> None:
+        """Obtiene un token fresco y lo cachea para todo el ciclo."""
+        self._token = self._get_token()
+
     def _headers(self) -> dict:
-        # Renueva el token en cada llamada (MSAL cachea internamente)
         return {
-            "Authorization": f"Bearer {self._get_token()}",
+            "Authorization": f"Bearer {self._token}",
             "Content-Type": "application/json",
         }
 
