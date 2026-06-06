@@ -134,13 +134,14 @@ class MailClient:
         r = requests.post(url, headers=self._headers(), json=payload)
         r.raise_for_status()
 
-    def marcar_procesado(self, message_id: str) -> None:
+    def marcar_procesado(self, message_id: str, categorias: list[str] | None = None) -> None:
         """
-        Agrega la categoría 'AgenteProcesado' al correo.
+        Agrega la categoría 'AgenteProcesado' al correo más las categorías de las reglas.
         Así el agente no lo vuelve a procesar en el próximo ciclo.
         """
+        todas = [CATEGORIA_PROCESADO] + [c for c in (categorias or []) if c != CATEGORIA_PROCESADO]
         url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}"
-        payload = {"categories": [CATEGORIA_PROCESADO]}
+        payload = {"categories": todas}
         r = requests.patch(url, headers=self._headers(), json=payload)
         r.raise_for_status()
 

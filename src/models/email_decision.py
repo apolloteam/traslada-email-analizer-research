@@ -25,3 +25,6 @@ class EmailDecision(BaseModel):
 
     prioridad: str
     """Prioridad del correo: 'alta' | 'media' | 'baja'."""
+
+    categories: list[str] = []
+    """Categorías de Outlook a asignar. Solo las definidas explícitamente en las reglas que aplican."""

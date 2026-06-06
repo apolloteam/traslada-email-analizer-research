@@ -9,6 +9,7 @@ No aplica si es una consulta de uso ("¿cómo hago X?") o una sugerencia de mejo
 - `reenviar_a`: estebansomma@traslada.com.ar
 - `instruccion_respuesta`: Confirmá la recepción del reporte, indicá que el equipo técnico fue notificado y que responderán en un máximo de 4 horas hábiles. Sé profesional y empático.
 - `comentario_reenvio`: ⚠️ Incidente técnico reportado por cliente. Requiere atención.
+- `categories`: ["Soporte", "Incidente"]
 
 
 ## Respuesta automática general

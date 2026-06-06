@@ -72,6 +72,7 @@ Sos un agente de correo empresarial. Analizá el correo recibido y decide qué a
 - reenviar_a: lista de emails destino (solo si accion incluye reenviar, sino [])
 - comentario_reenvio: texto opcional que acompaña el reenvío
 - prioridad: "alta" | "media" | "baja"
+- categories: lista de categorías de Outlook a asignar al correo. SOLO podés incluir categorías que estén definidas explícitamente en las reglas que aplican a este correo. Hacé un merge/union entre las categorías de las reglas generales y las específicas que apliquen. Si ninguna regla que aplica define categorías, devolvé []. NO inventes, sugieras ni agregues categorías que no estén literalmente en las reglas.
 
 Si ninguna regla aplica, usá "ignorar". La respuesta_html debe ser profesional y en el mismo idioma que el correo recibido.
 """.strip()

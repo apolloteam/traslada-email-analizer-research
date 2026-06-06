@@ -67,8 +67,8 @@ def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
             if decision["accion"] != "ignorar":
                 ejecutar_accion(decision, correo, mail_client)
 
-            # 3. Marcar como procesado (agregar categoría en Outlook)
-            mail_client.marcar_procesado(correo["id"])
+            # 3. Marcar como procesado (agregar categoría en Outlook + categorías de las reglas)
+            mail_client.marcar_procesado(correo["id"], decision.get("categories", []))
 
         except Exception as e:
             log.error(f"  ❌ Error procesando correo {correo['id']}: {e}")
