@@ -29,7 +29,10 @@ class AnalizadorClaude:
         return contenido
 
     def _cargar_reglas_especificas(self, buzon: str) -> str:
-        """Carga reglas específicas del buzón desde {local}.md en el mismo directorio que rules_path. Retorna vacío si no existe."""
+        """
+        Carga reglas específicas del buzón desde {local}.md en el mismo directorio 
+        que rules_path. Retorna vacío si no existe.
+        """
         name = buzon.split("@")[0]  # "ventas", "soporte", etc.
         path = os.path.join(self.rules_dir, f"{name}_rules.md")
         if not os.path.exists(path):
