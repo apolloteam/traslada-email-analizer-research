@@ -53,11 +53,30 @@ class MailClient:
         Lee correos que NO tienen la categoría 'AgenteProcesado'.
         Así el agente nunca reprocesa el mismo mail.
         """
+
+        # NOTA: El paréntesis en $select es solo para concatenar el string sin 
+        # que se rompa la línea (lo une en tiempo de compilación, no tiene costo). 
+        # No es parte de la sintaxis de Microsoft Graph.
         params = {
             "$top": cantidad,
-            "$select": "id,subject,from,toRecipients,body,bodyPreview,receivedDateTime,"
-                        "isRead,conversationId,sentDateTime,hasAttachments,importance,"
-                        "internetMessageId,ccRecipients,replyTo,parentFolderId",
+            "$select": (
+                "id,"
+                "internetMessageId,"
+                "conversationId,"
+                "subject,"
+                "from,"
+                "toRecipients,"
+                "ccRecipients,"
+                "replyTo,"
+                "bodyPreview,"
+                "body,"
+                "receivedDateTime,"
+                "isRead,"
+                "sentDateTime,"
+                "hasAttachments,"
+                "importance,"
+                "parentFolderId"
+            ),
             "$orderby": "receivedDateTime asc",
             # Excluye los ya procesados por el agente
             "$filter": f"NOT categories/any(c:c eq '{CATEGORIA_PROCESADO}')",
