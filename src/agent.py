@@ -70,6 +70,12 @@ def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
             # 3. Marcar como procesado (agregar categoría en Outlook + categorías de las reglas)
             mail_client.marcar_procesado(correo["id"], decision.get("categories", []))
 
+            # 4. Mover a carpeta de archivo si la conversación está cerrada
+            carpeta = decision.get("carpeta_archivo")
+            if carpeta:
+                mail_client.mover_a_carpeta(correo["id"], carpeta)
+                log.info(f"    📁 Movido a carpeta: {carpeta}")
+
         except Exception as e:
             log.error(f"  ❌ Error procesando correo {correo['id']}: {e}")
 

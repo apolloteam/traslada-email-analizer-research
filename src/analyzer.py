@@ -73,6 +73,7 @@ Sos un agente de correo empresarial. Analizá el correo recibido y decide qué a
 - comentario_reenvio: texto opcional que acompaña el reenvío
 - prioridad: "alta" | "media" | "baja"
 - categories: lista de categorías de Outlook a asignar al correo. SOLO podés incluir categorías que estén definidas explícitamente en las reglas que aplican a este correo. Hacé un merge/union entre las categorías de las reglas generales y las específicas que apliquen. Si ninguna regla que aplica define categorías, devolvé []. NO inventes, sugieras ni agregues categorías que no estén literalmente en las reglas.
+- carpeta_archivo: nombre de la carpeta de Outlook a la que mover el correo. Solo asignarlo cuando la conversación esté definitivamente cerrada (cliente confirmó, agradeció, o el tema no requiere más seguimiento). Si hay dudas o la conversación sigue abierta, devolvé null. Solo podés usar nombres de carpetas definidos explícitamente en las reglas específicas del buzón. Si aplican solo reglas generales (sin instrucción de archivo), devolvé null.
 
 Si ninguna regla aplica, usá "ignorar". La respuesta_html debe ser profesional y en el mismo idioma que el correo recibido.
 """.strip()

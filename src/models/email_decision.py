@@ -28,3 +28,6 @@ class EmailDecision(BaseModel):
 
     categories: list[str] = []
     """Categorías de Outlook a asignar. Solo las definidas explícitamente en las reglas que aplican."""
+
+    carpeta_archivo: Optional[str] = None
+    """Nombre de la carpeta de Outlook a la que mover el correo al cerrar la conversación. None = no mover."""

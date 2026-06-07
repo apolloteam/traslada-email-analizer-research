@@ -20,6 +20,7 @@ class MailClient:
         self.tenant_id = os.getenv("TENANT_ID")
         self.buzon = buzon
         self._token = None
+        self._folder_cache: dict[str, str] = {}  # nombre → folder_id
 
     # ── Auth ──────────────────────────────────────────────────────
 
@@ -148,4 +149,33 @@ class MailClient:
     def marcar_leido(self, message_id: str) -> None:
         url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}"
         r = requests.patch(url, headers=self._headers(), json={"isRead": True})
+        r.raise_for_status()
+
+    # ── Carpetas ──────────────────────────────────────────────────
+
+    def _get_or_create_folder(self, nombre: str) -> str:
+        """Devuelve el ID de la carpeta, creándola si no existe. Cachea el resultado."""
+        if nombre in self._folder_cache:
+            return self._folder_cache[nombre]
+
+        url = f"{GRAPH}/users/{self.buzon}/mailFolders"
+        r = requests.get(url, headers=self._headers(), params={"$filter": f"displayName eq '{nombre}'"})
+        r.raise_for_status()
+        carpetas = r.json().get("value", [])
+
+        if carpetas:
+            folder_id = carpetas[0]["id"]
+        else:
+            r = requests.post(url, headers=self._headers(), json={"displayName": nombre})
+            r.raise_for_status()
+            folder_id = r.json()["id"]
+
+        self._folder_cache[nombre] = folder_id
+        return folder_id
+
+    def mover_a_carpeta(self, message_id: str, nombre_carpeta: str) -> None:
+        """Mueve el correo a la carpeta indicada, creándola si no existe."""
+        folder_id = self._get_or_create_folder(nombre_carpeta)
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}/move"
+        r = requests.post(url, headers=self._headers(), json={"destinationId": folder_id})
         r.raise_for_status()
