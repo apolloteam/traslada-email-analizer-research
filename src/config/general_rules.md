@@ -20,3 +20,4 @@ No aplica a correos internos del dominio traslada.com.ar.
 
 - `accion`: responder
 - `instruccion_respuesta`: Agradecé el contacto. Indicá que el horario de atención es de lunes a viernes de 9 a 18 hs. Que revisarán su mensaje y responderán a la brevedad. No detalles más información.
+- `categories`: ["Ignorar"]
