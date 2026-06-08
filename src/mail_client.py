@@ -165,24 +165,41 @@ class MailClient:
     # ── Carpetas ──────────────────────────────────────────────────
 
     def _get_or_create_folder(self, nombre: str) -> str:
-        """Devuelve el ID de la carpeta, creándola si no existe. Cachea el resultado."""
+        """Devuelve el ID de la carpeta, creándola si no existe. Soporta rutas anidadas con '/'."""
         if nombre in self._folder_cache:
             return self._folder_cache[nombre]
 
-        url = f"{GRAPH}/users/{self.buzon}/mailFolders"
-        r = requests.get(url, headers=self._headers(), params={"$filter": f"displayName eq '{nombre}'"})
-        r.raise_for_status()
-        carpetas = r.json().get("value", [])
+        segmentos = nombre.split("/")
+        parent_id = None
+        ruta_acumulada = ""
 
-        if carpetas:
-            folder_id = carpetas[0]["id"]
-        else:
-            r = requests.post(url, headers=self._headers(), json={"displayName": nombre})
+        for segmento in segmentos:
+            ruta_acumulada = f"{ruta_acumulada}/{segmento}" if ruta_acumulada else segmento
+
+            if ruta_acumulada in self._folder_cache:
+                parent_id = self._folder_cache[ruta_acumulada]
+                continue
+
+            if parent_id is None:
+                url_base = f"{GRAPH}/users/{self.buzon}/mailFolders"
+            else:
+                url_base = f"{GRAPH}/users/{self.buzon}/mailFolders/{parent_id}/childFolders"
+
+            r = requests.get(url_base, headers=self._headers(), params={"$filter": f"displayName eq '{segmento}'"})
             r.raise_for_status()
-            folder_id = r.json()["id"]
+            carpetas = r.json().get("value", [])
 
-        self._folder_cache[nombre] = folder_id
-        return folder_id
+            if carpetas:
+                folder_id = carpetas[0]["id"]
+            else:
+                r = requests.post(url_base, headers=self._headers(), json={"displayName": segmento})
+                r.raise_for_status()
+                folder_id = r.json()["id"]
+
+            self._folder_cache[ruta_acumulada] = folder_id
+            parent_id = folder_id
+
+        return parent_id
 
     def mover_a_carpeta(self, message_id: str, nombre_carpeta: str) -> None:
         """Mueve el correo a la carpeta indicada, creándola si no existe."""
