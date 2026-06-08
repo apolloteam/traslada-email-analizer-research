@@ -35,6 +35,7 @@ No aplica si es un reporte técnico puntual sin tono de queja — esos van a Sop
 - `reenviar_a`: estebansomma@traslada.com.ar
 - `instruccion_respuesta`: Pedí disculpas sinceras por la experiencia negativa. Indicá que escalaste el caso y que alguien de atención al cliente se contactará en las próximas 2 horas. No prometás soluciones específicas todavía.
 - `comentario_reenvio`: 🚨 RECLAMO DE CLIENTE — Requiere atención prioritaria.
+- `categories`: ["Reclamo"]
 
 
 ## Facturación y administración

@@ -27,6 +27,26 @@ No aplica si es una consulta de uso ("¿cómo hago X?") o una sugerencia de mejo
 - `categories`: ["Soporte", "Incidente"]
 
 
+## Publicidad y correos no solicitados
+
+**condiciones:** El correo es claramente promocional, publicitario, o una oferta 
+no solicitada de productos o servicios dirigida a la empresa (no una consulta de 
+un cliente).
+
+Ejemplos que aplican: newsletters comerciales, ofertas de proveedores, 
+propuestas de agencias de marketing, correos masivos con diseño de campaña.
+
+No aplica si:
+- El correo es una consulta genuina de un cliente sobre nuestros servicios.
+- La oferta es de un proveedor con quien ya tenemos relación.
+- Hay dudas sobre si es publicidad o una consulta real → usá la regla que mejor aplique.
+
+- `accion`: ignorar
+- `carpeta_archivo`: "Publicidad"
+- `categories`: ["Publicidad"]
+- `comentario_reenvio`: null
+
+
 ## Respuesta automática general
 
 **condiciones:** Cualquier correo que no encaje en las reglas anteriores y sea de un remitente externo.
@@ -34,5 +54,5 @@ No aplica si es una consulta de uso ("¿cómo hago X?") o una sugerencia de mejo
 No aplica a correos internos del dominio traslada.com.ar y dottransfers.com.
 
 - `accion`: responder
-- `instruccion_respuesta`: Agradecé el contacto. Indicá que el horario de atención es de lunes a viernes de 9 a 18 hs. Que revisarán su mensaje y responderán a la brevedad. No detalles más información.
+- `instruccion_respuesta`: Agradecé el contacto. Indica que revisaremos su mensaje y responderán a la brevedad. No detalles más información.
 - `categories`: ["Ignorar"]
