@@ -1,7 +1,12 @@
 ✓ / ☐
-☐ Ver chat de agregado de decisiones: https://claude.ai/chat/475eb81e-68ef-4d20-88bc-7ede85e2c499
+✓ Ver chat de agregado de decisiones: https://claude.ai/chat/475eb81e-68ef-4d20-88bc-7ede85e2c499
     ✓ En analizar() cargar prompt específico para el buzon.
 ✓ Campo categorias.
-☐ Campo para carpeta intermedia y carpeta final
-☐ red_flags
+✓ Campo para carpeta intermedia y carpeta final
+✓ red_flags
 ☐ Plantilla de respuesta ???
+☐ Rate limits — ni Graph API ni Anthropic tienen manejo de throttling. Si llegan 20 correos juntos y alguna llamada devuelve 429, el ciclo entero explota. Fix simple: un time.sleep(1) entre correos, o un retry con backoff exponencial.
+☐ Dry-run mode — Un --dry-run en agent.py que loguee las decisiones sin ejecutar nada sería muy útil para probar reglas nuevas sin riesgo.
+☐ prioridad no se usa — Claude la devuelve, está en EmailDecision, pero en agent.py y actions.py nadie la lee. Podrías usarla para cambiar la importance del correo en Graph API (marcar_importancia()), o al menos logearla diferente.
+☐ Carpetas anidadas — _get_or_create_folder() solo crea carpetas de primer nivel. Las reglas ya usan paths como "Comercial/Cerrado" y "Reclamos/Resuelto", pero el método actual las crearía como carpetas planas con ese nombre literal. Hay que implementar la navegación jerárquica.
+☐ Plantillas de respuesta — está en el TODO con ???. Es lo único de tu lista de mejoras nuevas que no está implementado todavía.
