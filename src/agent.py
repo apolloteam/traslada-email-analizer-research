@@ -100,7 +100,7 @@ def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
                 log.info(f"    📁 Movido a carpeta: {carpeta}")
 
             # 5. Marcar como procesado (agregar categoría en Outlook + categorías de las reglas)
-            mail_client.marcar_procesado(correo["id"], decision.get("categories", []))           
+            mail_client.marcar_procesado(correo["id"], decision.get("categorias", []))           
 
         except Exception as e:
             log.error(f"  ❌ Error procesando correo {correo['id']}: {e}")

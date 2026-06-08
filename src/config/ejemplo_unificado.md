@@ -39,13 +39,13 @@ Ante la duda entre dos reglas, aplicá la más específica. Si ninguna aplica, u
 **condiciones:** El correo menciona abogados, demandas, juicio, "voy a denunciar", acciones legales, mediación, o cualquier lenguaje que implique una acción legal contra la empresa.
 
 - `escalar_a`: estebansomma@traslada.com.ar
-- `categories`: ["🚨 Red Flag", "Legal"]
+- `categorias`: ["🚨 Red Flag", "Legal"]
 
 ### Mención de prensa o redes sociales
 **condiciones:** El cliente amenaza con publicar su experiencia en redes sociales, contactar medios de comunicación, hacer pública su queja, o menciona periodistas.
 
 - `escalar_a`: estebansomma@traslada.com.ar
-- `categories`: ["🚨 Red Flag", "Reputacional"]
+- `categorias`: ["🚨 Red Flag", "Reputacional"]
 
 
 ## Soporte técnico
@@ -59,7 +59,7 @@ No aplica si es una consulta de uso ("¿cómo hago X?") o una sugerencia de mejo
 - `reenviar_a`: estebansomma@traslada.com.ar
 - `instruccion_respuesta`: Confirmá la recepción del reporte, indicá que el equipo técnico fue notificado y que responderán en un máximo de 4 horas hábiles. Sé profesional y empático.
 - `comentario_reenvio`: ⚠️ Incidente técnico reportado por cliente. Requiere atención.
-- `categories`: ["Soporte", "Incidente"]
+- `categorias`: ["Soporte", "Incidente"]
 
 
 ## Respuesta automática general
@@ -70,7 +70,7 @@ No aplica a correos internos del dominio traslada.com.ar.
 
 - `accion`: responder
 - `instruccion_respuesta`: Agradecé el contacto. Indicá que el horario de atención es de lunes a viernes de 9 a 18 hs. Que revisarán su mensaje y responderán a la brevedad. No detalles más información.
-- `categories`: ["Ignorar"]
+- `categorias`: ["Ignorar"]
 
 
 # Reglas específicas para este buzón de correo
@@ -96,7 +96,7 @@ No aplica si ya es un cliente con una queja o un problema técnico.
 - `reenviar_a`: estebansomma@traslada.com.ar
 - `instruccion_respuesta`: Agradecé el interés, informá que un asesor comercial se contactará en breve con una propuesta personalizada. Incluí el nombre de la empresa si figura en el correo.
 - `comentario_reenvio`: 💼 Lead comercial entrante. Contactar a la brevedad.
-- `categories`: ["Comercial", "Lead"]
+- `categorias`: ["Comercial", "Lead"]
 
 
 ## Reclamo de cliente
@@ -142,7 +142,7 @@ Si la conversación sigue abierta, el cliente no respondió, o hay dudas → dej
 - `reenviar_a`: lista de emails destino (solo si accion incluye reenviar, sino [])
 - `comentario_reenvio`: texto opcional que acompaña el reenvío
 - `prioridad`: "alta" | "media" | "baja"
-- `categories`: lista de categorías de Outlook a asignar al correo. SOLO podés incluir categorías que estén definidas explícitamente en las reglas que aplican a este correo. Hacé un merge/union entre las categorías de las reglas generales y las específicas que apliquen. Si ninguna regla que aplica define categorías, devolvé []. NO inventes, sugieras ni agregues categorías que no estén literalmente en las reglas.
+- `categorias`: lista de categorías de Outlook a asignar al correo. SOLO podés incluir categorías que estén definidas explícitamente en las reglas que aplican a este correo. Hacé un merge/union entre las categorías de las reglas generales y las específicas que apliquen. Si ninguna regla que aplica define categorías, devolvé []. NO inventes, sugieras ni agregues categorías que no estén literalmente en las reglas.
 - `carpeta_archivo`: nombre de la carpeta de Outlook a la que mover el correo. Solo asignarlo cuando la conversación esté definitivamente cerrada (cliente confirmó, agradeció, o el tema no requiere más seguimiento). Si hay dudas o la conversación sigue abierta, devolvé null. Solo podés usar nombres de carpetas definidos explícitamente en las reglas específicas del buzón. Si aplican solo reglas generales (sin instrucción de archivo), devolvé null.
 - `red_flags_detectados`: lista con los nombres de los red flags que aplican a este correo, según la sección "Red Flags" de las reglas. Vacío si ninguno aplica.
 - `escalar_a`: unión de todos los `escalar_a` de los red flags detectados, sin duplicados. Vacío si no hay red flags.
