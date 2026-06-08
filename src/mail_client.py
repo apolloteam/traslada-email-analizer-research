@@ -110,6 +110,17 @@ class MailClient:
         r = requests.post(url, headers=self._headers(), json=payload)
         r.raise_for_status()
 
+    def crear_draft_respuesta(self, message_id: str, cuerpo_html: str) -> None:
+        """Crea un borrador de respuesta en la carpeta Drafts sin enviarlo."""
+        url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}/createReply"
+        payload = {
+            "message": {
+                "body": {"contentType": "HTML", "content": cuerpo_html}
+            }
+        }
+        r = requests.post(url, headers=self._headers(), json=payload)
+        r.raise_for_status()
+
     def reenviar(self, message_id: str, destinatarios: list[str], comentario: str = "") -> None:
         """Reenvía el correo a una lista de destinatarios."""
         to_list = [{"emailAddress": {"address": e}} for e in destinatarios]

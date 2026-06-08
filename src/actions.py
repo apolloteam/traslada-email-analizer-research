@@ -43,8 +43,12 @@ def _responder(mail: MailClient, msg_id: str, remitente: str, asunto: str, decis
         log.warning("    ⚠️  Acción 'responder' sin respuesta_html. Saltando.")
         return
 
-    mail.responder(msg_id, cuerpo)
-    log.info(f"    ✉️  Respuesta enviada a: {remitente} | Asunto: {asunto}")
+    if decision.get("responder_como_draft", False):
+        mail.crear_draft_respuesta(msg_id, cuerpo)
+        log.info(f"    📝  Borrador creado para: {remitente} | Asunto: {asunto}")
+    else:
+        mail.responder(msg_id, cuerpo)
+        log.info(f"    ✉️  Respuesta enviada a: {remitente} | Asunto: {asunto}")
 
 
 def _reenviar(mail: MailClient, msg_id: str, decision: dict):

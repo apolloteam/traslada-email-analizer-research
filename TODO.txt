@@ -6,7 +6,7 @@
 ✓ Campo para carpeta intermedia y carpeta final
 ✓ red_flags
 ✓ Revisar prompts.
-☐ Si la regla lo indica, dejar la respuesta en draft (no enviar directamente).
+✓ Si la regla lo indica, dejar la respuesta en draft (no enviar directamente).
 ☐ Log en base de datos.
 ☐ Rate limits — ni Graph API ni Anthropic tienen manejo de throttling. Si llegan 20 correos juntos y alguna llamada devuelve 429, el ciclo entero explota. Fix simple: un time.sleep(1) entre correos, o un retry con backoff exponencial.
 ☐ Dry-run mode — Un --dry-run en agent.py que loguee las decisiones sin ejecutar nada sería muy útil para probar reglas nuevas sin riesgo.

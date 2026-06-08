@@ -53,6 +53,7 @@ Aplicá este tono en todas tus respuestas salvo que las reglas específicas del 
 - `prioridad`: "alta" | "media" | "baja"
 - `categories`: lista de categorías de Outlook a asignar al correo. SOLO podés incluir categorías que estén definidas explícitamente en las reglas que aplican a este correo. Hacé un merge/union entre las categorías de las reglas generales y las específicas que apliquen. Si ninguna regla que aplica define categorías, devolvé []. NO inventes, sugieras ni agregues categorías que no estén literalmente en las reglas.
 - `carpeta_archivo`: nombre de la carpeta de Outlook a la que mover el correo. Solo asignarlo cuando la conversación esté definitivamente cerrada (cliente confirmó, agradeció, o el tema no requiere más seguimiento). Si hay dudas o la conversación sigue abierta, devolvé null. Solo podés usar nombres de carpetas definidos explícitamente en las reglas específicas del buzón. Si aplican solo reglas generales (sin instrucción de archivo), devolvé null.
+- `responder_como_draft`: true si la regla que aplica define `draft: true`. La respuesta se guardará como borrador en Drafts para revisión humana, en lugar de enviarse. Default: false.
 - `red_flags_detectados`: lista con los nombres de los red flags que aplican a este correo, según la sección "Red Flags" de las reglas. Vacío si ninguno aplica.
 - `escalar_a`: unión de todos los `escalar_a` de los red flags detectados, sin duplicados. Vacío si no hay red flags.
 
