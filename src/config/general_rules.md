@@ -1,3 +1,18 @@
+## Red Flags
+
+### Amenaza legal
+**condiciones:** El correo menciona abogados, demandas, juicio, "voy a denunciar", acciones legales, mediación, o cualquier lenguaje que implique una acción legal contra la empresa.
+
+- `escalar_a`: estebansomma@traslada.com.ar
+- `categories`: ["🚨 Red Flag", "Legal"]
+
+### Mención de prensa o redes sociales
+**condiciones:** El cliente amenaza con publicar su experiencia en redes sociales, contactar medios de comunicación, hacer pública su queja, o menciona periodistas.
+
+- `escalar_a`: estebansomma@traslada.com.ar
+- `categories`: ["🚨 Red Flag", "Reputacional"]
+
+
 ## Soporte técnico
 
 **condiciones:** El correo menciona errores, fallas, sistemas caídos, bugs, o problemas técnicos.

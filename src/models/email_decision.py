@@ -31,3 +31,9 @@ class EmailDecision(BaseModel):
 
     carpeta_archivo: Optional[str] = None
     """Nombre de la carpeta de Outlook a la que mover el correo al cerrar la conversación. None = no mover."""
+
+    red_flags_detectados: list[str] = []
+    """Nombres de los red flags detectados. Vacío si ninguno aplica."""
+
+    escalar_a: list[str] = []
+    """Emails a notificar por escalación (union de todos los red flags que aplican, sin duplicados)."""

@@ -179,3 +179,30 @@ class MailClient:
         url = f"{GRAPH}/users/{self.buzon}/messages/{message_id}/move"
         r = requests.post(url, headers=self._headers(), json={"destinationId": folder_id})
         r.raise_for_status()
+
+    # ── Escalación ────────────────────────────────────────────────
+
+    def enviar_alerta_escalacion(
+        self,
+        correo_original: dict,
+        red_flags: list[str],
+        destinatarios: list[str],
+    ) -> None:
+        """Envía un email de alerta a los contactos de escalación por red flags detectados."""
+        remitente    = correo_original.get("from", {}).get("emailAddress", {}).get("address", "desconocido")
+        asunto       = correo_original.get("subject", "(sin asunto)")
+        cuerpo_orig  = correo_original.get("body", {}).get("content", "")
+        flags_html   = "".join(f"<li><b>{f}</b></li>" for f in red_flags)
+
+        cuerpo_html = (
+            f"<p>⚠️ El agente de correo detectó <b>señales de alerta</b> en el siguiente correo:</p>"
+            f"<ul>{flags_html}</ul>"
+            f"<hr>"
+            f"<p><b>De:</b> {remitente}<br>"
+            f"<b>Asunto:</b> {asunto}</p>"
+            f"<blockquote>{cuerpo_orig}</blockquote>"
+        )
+        asunto_alerta = f"🚨 Red flag detectado: {asunto}"
+
+        for destinatario in destinatarios:
+            self.enviar_nuevo(destinatario, asunto_alerta, cuerpo_html)
