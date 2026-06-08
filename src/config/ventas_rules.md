@@ -22,6 +22,7 @@ No aplica si ya es un cliente con una queja o un problema técnico.
 - `instruccion_respuesta`: Agradecé el interés, informá que un asesor comercial se contactará en breve con una propuesta personalizada. Incluí el nombre de la empresa si figura en el correo.
 - `comentario_reenvio`: 💼 Lead comercial entrante. Contactar a la brevedad.
 - `categorias`: ["Comercial", "Lead"]
+- `borrador`: true
 
 
 ## Reclamo de cliente
