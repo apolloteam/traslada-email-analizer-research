@@ -57,6 +57,25 @@ def ciclo(mail_client: MailClient, analizador: AnalizadorClaude):
             remitente = correo.get("from", {}).get("emailAddress", {}).get("address", "")
             direction = 1 if remitente.lower() == mail_client.buzon.lower() else 0  # 0=recibido, 1=enviado
             correo["direction"] = direction
+            dominios_internos = ["traslada.com.ar", "dottransfers.com"]
+            dominio_remitente = remitente.split("@")[-1].lower()
+
+            # ── Filtros previos al análisis ───────────────────────────────────────────────────────
+            if correo["direction"] == 1:
+                log.info(f"  ⏭ Saliente, ignorando.")
+                mail_client.marcar_procesado(correo["id"])
+                continue
+
+            if remitente.lower().startswith("no-reply") or remitente.lower().startswith("noreply"):
+                log.info(f"  ⏭ Remitente automático, ignorando.")
+                mail_client.marcar_procesado(correo["id"])
+                continue
+
+            if dominio_remitente in dominios_internos:
+                log.info(f"  ⏭ Correo interno ({remitente}), ignorando.")
+                mail_client.marcar_procesado(correo["id"])
+                continue
+            # ──────────────────────────────────────────────────────────────────────────────────────
 
             # 1. Claude analiza el correo y decide qué hacer
             decision = analizador.analizar(correo, mail_client.buzon)

@@ -20,6 +20,7 @@ _CORREO_PROMPT_TEMPLATE = """
 # Correo recibido
 - **Remitente:** {remitente}
 - **Fecha:** {fecha}
+- **Dirección:** {direccion}
 - **Asunto:** {asunto}
 - **Cuerpo:**
 {cuerpo}
@@ -85,6 +86,7 @@ class AnalizadorClaude:
         correo_prompt = _CORREO_PROMPT_TEMPLATE.format_map({
             "remitente": remitente,
             "fecha": fecha,
+            "direccion": "enviado" if correo.get("direction", 0) == 1 else "recibido",
             "asunto": asunto,
             "cuerpo": cuerpo,
         })

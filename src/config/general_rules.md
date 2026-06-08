@@ -31,7 +31,7 @@ No aplica si es una consulta de uso ("¿cómo hago X?") o una sugerencia de mejo
 
 **condiciones:** Cualquier correo que no encaje en las reglas anteriores y sea de un remitente externo.
 
-No aplica a correos internos del dominio traslada.com.ar.
+No aplica a correos internos del dominio traslada.com.ar y dottransfers.com.
 
 - `accion`: responder
 - `instruccion_respuesta`: Agradecé el contacto. Indicá que el horario de atención es de lunes a viernes de 9 a 18 hs. Que revisarán su mensaje y responderán a la brevedad. No detalles más información.
