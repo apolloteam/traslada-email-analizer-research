@@ -27,7 +27,7 @@ No aplica si ya es un cliente con una queja o un problema técnico.
 
 ## Reclamo de cliente
 
-**condiciones:** El correo expresa insatisfacción, reclamo, queja, o menciona palabras como "mal servicio", "decepcionado", "exijo", "no funciona", "problema con mi pedido".
+**condiciones:** El correo expresa insatisfacción, reclamo, queja, o menciona palabras como "mal servicio", "decepcionado", "exijo", "no funciona", "problema con mi traslado".
 
 Ejemplos que aplican: "estoy muy disconforme", "exijo una solución", "el pedido llegó mal", "nunca me respondieron".
 No aplica si es un reporte técnico puntual sin tono de queja — esos van a Soporte técnico.
