@@ -1,7 +1,7 @@
 Reglas y consideraciones para este buzón.
 
-**Buzón:** ventas@traslada.com.ar  
-**Propósito:** Recibe consultas comerciales, leads, y primeros contactos de clientes potenciales.
+**Buzón:** administracion@traslada.com.ar  
+**Propósito:** Recibe consultas administrativas.
 
 ## Tono para este buzón
 
@@ -58,5 +58,6 @@ Cuando determinés que la conversación está completamente resuelta (el cliente
 - El cliente aceptó un presupuesto o contrató el servicio → `"Comercial/Cerrado"`
 - La solicitud fue rechazada (fuera de servicio, sin disponibilidad, no aplica) → `"Comercial/NoAtendible"`
 - El reclamo fue resuelto y el cliente confirmó conformidad → `"Reclamos/Resuelto"`
+- Consulta de facturación resuelta → `"Administracion/Resuelto"`
 
 Si la conversación sigue abierta, el cliente no respondió, o hay dudas → dejá `carpeta_archivo` en null.
